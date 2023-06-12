@@ -2,6 +2,7 @@
 syntax enable
 set encoding=utf-8
 set tabstop=4
+set mouse= " This disables the mouse and prevents scrolling
 
 "Style
 set number
@@ -13,6 +14,7 @@ set novisualbell
 set belloff=all
 set autochdir
 set showcmd " display incomplete commands
+
 
 command R !python/%
 set t_Co=256   " This is may or may not needed.
@@ -32,6 +34,11 @@ set list
 set listchars=""                  " reset the listchars
 set listchars=tab:▸\ ,eol:¬       " a tab should display as "▸ ", end of lines as "¬"
 set listchars+=trail:.   
+
+" Indentation
+filetype plugin indent on
+au FileType html setlocal shiftwidth=2 tabstop=2
+
 
 "Searching
 set hlsearch                      " highlight matches...
@@ -55,6 +62,18 @@ syntax off
 set rtp+=~/.vim/bundle/Vundle.vim
 " start vundle environment
 call vundle#begin()
+
+" Define a custom function to copy the selected text to the clipboard using pbcopy
+function! CopyToClipboard() range
+    let l:save_register = getreg('"')
+    silent execute 'normal! "<" . v:register . 'y'
+    silent execute '!pbcopy'
+    call setreg('"', l:save_register)
+endfunction
+
+" Create a custom command :Pbcopy that calls the CopyToClipboard function
+command! -range=% -nargs=0 Pbcopy call CopyToClipboard()
+
 
 " PLUGINS
 " list of plugins {{{2
@@ -81,8 +100,8 @@ colorscheme gruvbox
 autocmd vimenter * NERDTree
 
 "Remap keys
-cmap <C-k> <Down>
-cmap <C-j> <Up>
+" cmap <C-k> <Down>
+" cmap <C-j> <Up>
 
 " Plugin settings
 let NERDTreeShowBookmarks=1     " Open bookmarks in NERDTree on startup`
